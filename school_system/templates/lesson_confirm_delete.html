@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-danger">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="mb-0">⚠️ Darsni O'chirish</h4>
+            </div>
+            <div class="card-body p-4 text-center">
+                <h5 class="card-title text-danger mb-3">Haqiqatan ham o'chirmoqchimisiz?</h5>
+                
+                <p class="card-text">
+                    Siz <strong>"{{ lesson.subject }}"</strong> ({{ lesson.get_day_display }}) darsini o'chirmoqchisiz.
+                </p>
+                <p class="text-muted small">
+                    Bu amalni ortga qaytarib bo'lmaydi. Dars butunlay o'chib ketadi.
+                </p>
+                
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'timetable' %}" class="btn btn-secondary px-4">
+                            Bekor qilish
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            Ha, O'chirish 🗑️
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

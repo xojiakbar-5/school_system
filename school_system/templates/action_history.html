@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin: 20px;">
+    <h2>Tizim Tarixi (Loglar)</h2>
+    <p>Bu yerda o'qituvchilar tomonidan amalga oshirilgan barcha o'zgarishlar saqlanadi.</p>
+
+    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th>Vaqt</th>
+                <th>Foydalanuvchi</th>
+                <th>Rol</th>
+                <th>Amal</th>
+                <th>Fan</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.timestamp|date:"d-M Y H:i" }}</td>
+                <td>{{ log.user.username }}</td>
+                <td>{{ log.user.role }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.subject }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center;">Hozircha hech qanday tarix mavjud emas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{% url 'timetable' %}">Jadvalga qaytish</a>
+</div>
+{% endblock %}

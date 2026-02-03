@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">Maktab Tizimiga Xush Kelibsiz!</h1>
+        
+        {% if user.is_authenticated %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">Foydalanuvchi Ma'lumotlari</h3>
+                    <hr>
+                    <div class="row text-start">
+                        <div class="col-md-6">
+                            <p><strong>👤 Username:</strong> {{ user.username }}</p>
+                            <p><strong>🆔 ID Raqam:</strong> {{ user.id }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>🎓 Rol:</strong> 
+                                {{ user.get_role_display }}
+                            </p>
+                            <p><strong>📧 Email:</strong> {{ user.email|default:"Kiritilmagan" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'timetable' %}" class="btn btn-primary btn-lg px-5 py-3 shadow">
+                📅 Dars Jadvalini Ko'rish
+            </a>
+        {% else %}
+            <p class="lead">Tizimdan foydalanish uchun iltimos, tizimga kiring.</p>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Kirish</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

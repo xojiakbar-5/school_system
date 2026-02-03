@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>🔐 Tizimga Kirish</h4>
+            </div>
+            <div class="card-body p-4">
+                {% if custom_error %}
+                    <div class="alert alert-warning text-center">
+                        <h5>{{ custom_error }}</h5>
+                        <p class="small text-muted">5 soniyadan so'ng asosiy sahifaga yo'naltirilasiz...</p>
+                    </div>
+                    <script>
+                        setTimeout(function(){
+                            // Foydalanuvchi tizimda bo'lgani uchun uni jadval sahifasiga yo'naltiramiz
+                            // Agar login sahifasiga yo'naltirsak, yana shu xatolik chiqib qoladi
+                            window.location.href = "{% url 'timetable' %}";
+                        }, 5000);
+                    </script>
+                {% else %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- Formani chiroyli qilish uchun bootstrap klasslarini qo'shamiz -->
+                        {{ form.as_p }}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Kirish</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+            {% if not custom_error %}
+            <div class="card-footer text-center text-muted">
+                Hisobingiz yo'qmi? <a href="{% url 'register' %}">Ro'yxatdan o'ting</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
