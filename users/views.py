@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout
 
 def register_view(request):
     if request.user.is_authenticated:
-        return render(request, 'login.html', {'custom_error': 'Siz ushbu profildan chiqmay turib boshqasiga kirsa olmaysiz !!!'})
+        return redirect('timetable')  # Tizimga kirgan foydalanuvchini asosiy sahifaga yo'naltirish
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -21,14 +21,14 @@ def register_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return render(request, 'login.html', {'custom_error': 'Siz ushbu profildan chiqmay turib boshqasiga kirsa olmaysiz !!!'})
+        return redirect('timetable')  # Tizimga kirgan foydalanuvchini asosiy sahifaga yo'naltirish
 
     if request.method == 'POST':
         form = AuthenticationForm(data = request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')
+            return redirect('timetable')  # Muvaffaqiyatli kirishdan so'ng jadval sahifasiga
         else:
             # Xatolik bo'lsa, redirect qilmasdan, formani xatoliklari bilan qaytaramiz
             return render(request, 'login.html', {'form': form})

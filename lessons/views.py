@@ -21,20 +21,19 @@ def timetable(request):
     # Optimizatsiya: Barcha darslarni bitta so'rov bilan olib, vaqt bo'yicha saralaymiz
     lessons = lessons.order_by('start_time')
     
-    # Python xotirasida kunlarga ajratamiz (DB ga 6 marta emas, 1 marta murojaat bo'ladi)
-    days_dict = {'Mon': [], 'Tues': [], 'Wednes': [], 'Thurs': [], 'Fri': [], 'Satur': []}
-    for lesson in lessons:
-        if lesson.day in days_dict:
-            days_dict[lesson.day].append(lesson)
+    # Darslarni kunlar bo'yicha guruhlaymiz
+    # `choices` dan foydalanib, yakshanbadan tashqari barcha kunlar uchun ro'yxat yaratamiz
+    lessons_by_day = {day_val: [] for day_val, day_label in Lesson.Days.choices if day_val != Lesson.Days.SUNDAY}
 
+    for lesson in lessons:
+        if lesson.day in lessons_by_day:
+            lessons_by_day[lesson.day].append(lesson)
+
+    # Shablon uchun ma'lumot tayyorlaymiz
     days_data = [
-        ('Dushanba', days_dict['Mon']),
-        ('Seshanba', days_dict['Tues']),
-        ('Chorshanba', days_dict['Wednes']),
-        ('Payshanba', days_dict['Thurs']),
-        ('Juma', days_dict['Fri']),
-        ('Shanba', days_dict['Satur']),
+        (Lesson.Days(day).label, lessons_by_day[day]) for day in lessons_by_day
     ]
+
     return render(request, 'timetable.html', {'days_data': days_data})
 
 @login_required
@@ -79,11 +78,25 @@ def lesson_update(request, pk):
     if request.method == 'POST':
         form = LessonForm(request.POST, instance=lesson)
         if form.is_valid():
-            form.save()
+            updated_lesson = form.save(commit=False)
+
+            # Vaqt to'qnashuvini tekshirish (o'zgartirilayotgan darsdan tashqari)
+            conflicting_lessons = Lesson.objects.filter(
+                teacher=request.user,
+                day=updated_lesson.day,
+                start_time__lt=updated_lesson.end_time,
+                end_time__gt=updated_lesson.start_time
+            ).exclude(pk=pk)  # Joriy darsni tekshiruvdan chiqarib tashlaymiz
+
+            if conflicting_lessons.exists():
+                form.add_error(None, "Bu vaqt oralig'ida allaqachon boshqa darsingiz bor!")
+                return render(request, 'lesson_form.html', {'form': form})
+
+            updated_lesson.save()
             ActionLog.objects.create(
                 user=request.user,
                 action="O'zgartirdi",
-                subject=lesson.subject
+                subject=updated_lesson.subject
             )
             return redirect('timetable')
     else:

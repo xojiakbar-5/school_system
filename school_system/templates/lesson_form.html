@@ -1,100 +1,57 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dars Qo'shish</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .form-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        h2 {
-            text-align: center;
-            color: #1a1a1a;
-            margin-bottom: 25px;
-            margin-top: 0;
-        }
-        /* Django formasi elementlari uchun stillar */
-        p {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #444;
-            font-weight: 600;
-        }
-        input[type="text"],
-        input[type="time"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        input:focus, select:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-        button {
-            width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <div class="form-container">
-        <h2>Yangi Dars Qo'shish</h2>
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0 fw-light">
+                        {% if form.instance.pk %}
+                            ✏️ Darsni Tahrirlash
+                        {% else %}
+                            ➕ Yangi Dars Qo'shish
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            
-            <button type="submit">
-                Saqlash
-            </button>
-        </form>
-        
-        <a href="{% url 'timetable' %}" class="back-link">Bekor qilish</a>
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="form-floating mb-3">
+                                {{ field }}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ field.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                {% if form.instance.pk %}
+                                    Saqlash
+                                {% else %}
+                                    Qo'shish
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'timetable' %}" class="btn btn-outline-secondary">Bekor qilish</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}
